@@ -56,6 +56,7 @@ public class Game {
         dto.put("created", this.getCreationDate());
         dto.put("gamePlayers", getGamePlayers().stream().map(GamePlayer::makeGamePlayerDTO).collect(Collectors.toList()));
         dto.put("ships", gamePlayer.getShips().stream().map(Ship::makeShipDTO).collect(Collectors.toList()));
+        dto.put("salvoes", getGamePlayers().stream().map(GamePlayer::getSalvoes).flatMap(Collection::stream).collect(Collectors.toList()));
         return dto;
     }
 

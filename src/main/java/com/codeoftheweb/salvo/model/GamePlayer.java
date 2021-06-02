@@ -24,8 +24,11 @@ public class GamePlayer {
     @JoinColumn(name = "playerID")
     private Player player;
 
-    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "gpShip", fetch = FetchType.EAGER)
     Set<Ship> ship;
+
+    @OneToMany(mappedBy = "gpSalvo", fetch = FetchType.EAGER)
+    Set<Salvo> salvo;
 
     //Constructors
     public GamePlayer() {
@@ -68,6 +71,10 @@ public class GamePlayer {
 
     public List<Ship> getShips() {
         return new ArrayList<>(this.ship);
+    }
+
+    public List<Object> getSalvoes() {
+        return salvo.stream().map(Salvo::makeSalvoDTO).collect(Collectors.toList());
     }
 
     //Setters

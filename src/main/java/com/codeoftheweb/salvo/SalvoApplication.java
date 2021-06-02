@@ -1,13 +1,7 @@
 package com.codeoftheweb.salvo;
 
-import com.codeoftheweb.salvo.model.Game;
-import com.codeoftheweb.salvo.model.GamePlayer;
-import com.codeoftheweb.salvo.model.Player;
-import com.codeoftheweb.salvo.model.Ship;
-import com.codeoftheweb.salvo.repository.GamePlayerRepository;
-import com.codeoftheweb.salvo.repository.GameRepository;
-import com.codeoftheweb.salvo.repository.PlayerRepository;
-import com.codeoftheweb.salvo.repository.ShipRepository;
+import com.codeoftheweb.salvo.model.*;
+import com.codeoftheweb.salvo.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,7 +18,7 @@ public class SalvoApplication {
     }
 
     @Bean
-    public CommandLineRunner initData(PlayerRepository repoPlayer, GameRepository repoGame, GamePlayerRepository repoGamePlayer, ShipRepository repoShip) {
+    public CommandLineRunner initData(PlayerRepository repoPlayer, GameRepository repoGame, GamePlayerRepository repoGamePlayer, ShipRepository repoShip, SalvoRepository repoSalvo) {
         return (args) -> {
             Player player1 = new Player("juaas@gmail.com");
             Player player2 = new Player("karen@gmail.com");
@@ -59,12 +53,19 @@ public class SalvoApplication {
             repoGamePlayer.save(gmp5);
             repoGamePlayer.save(gmp6);
 
-            repoShip.save(new Ship(gmp1, "Destructor", Arrays.asList("H7", "I2", "J1")));
-            repoShip.save(new Ship(gmp2, "Patrullero", Arrays.asList("F10", "J2", "B1")));
-            repoShip.save(new Ship(gmp3, "Destructor", Arrays.asList("H7", "I2", "C1")));
-            repoShip.save(new Ship(gmp4, "Patrullero", Arrays.asList("F4", "J2", "B1")));
-            repoShip.save(new Ship(gmp5, "Destructor", Arrays.asList("H7", "I2", "D1")));
-            repoShip.save(new Ship(gmp6, "Patrullero", Arrays.asList("G6", "J2", "B1")));
+            repoShip.save(new Ship(gmp1, "Destructor", Arrays.asList("H7", "I2", "J1", "A9")));
+            repoShip.save(new Ship(gmp2, "Patrullero", Arrays.asList("F10", "F3", "B1", "J2")));
+            repoShip.save(new Ship(gmp3, "Destructor", Arrays.asList("H7", "I2", "C1", "D2")));
+            repoShip.save(new Ship(gmp4, "Patrullero", Arrays.asList("F4", "J2", "B1", "C7")));
+            repoShip.save(new Ship(gmp5, "Destructor", Arrays.asList("H7", "I2", "D1", "F2")));
+            repoShip.save(new Ship(gmp6, "Patrullero", Arrays.asList("G6", "J2", "B1", "G5")));
+
+            repoSalvo.save(new Salvo(gmp1, 1, Arrays.asList("H7", "A2")));
+            repoSalvo.save(new Salvo(gmp1, 2, Arrays.asList("G1", "A9")));
+            repoSalvo.save(new Salvo(gmp2, 1, Arrays.asList("F10", "J2")));
+            repoSalvo.save(new Salvo(gmp2, 2, Arrays.asList("B1", "A2")));
+            repoSalvo.save(new Salvo(gmp3, 1, Arrays.asList("H7", "I2")));
+            repoSalvo.save(new Salvo(gmp4, 2, Arrays.asList("C1", "D2")));
         };
     }
 }

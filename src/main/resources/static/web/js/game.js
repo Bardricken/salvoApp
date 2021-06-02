@@ -1,5 +1,4 @@
-const urlParams = new URLSearchParams(window.location.search);
-const url = `/api/game_view/${urlParams.get("gp")}`;
+const url = `/api/game_view/${getParameterByName("gp")}`;
 
 loadData();
 
@@ -12,55 +11,57 @@ function loadData() {
     })
     .catch((error) => {
       alert("No se ha encontrado el juego!");
+      console.log(error);
     });
 }
 
-function updateView(game) {
-  let item = document.createElement("tr");
-  let item2 = document.createElement("td");
-  item2.appendChild(document.createTextNode(" "));
-  item.appendChild(item2);
-  let res = [];
-  game.ships.forEach(function (dt) {
-    res = res.concat(dt.locations.map((s) => s.split("")));
+function getParameterByName(name) {
+  let match = RegExp("[?&]" + name + "=([^&]*)").exec(window.location.search);
+  return match && decodeURIComponent(match[1].replace(/\+/g, " "));
+}
+
+function updateView(data) {
+  let playerInfo;
+  if (data.gamePlayers[0].id == getParameterByName("gp"))
+    playerInfo = [data.gamePlayers[0].player, data.gamePlayers[1].player];
+  else playerInfo = [data.gamePlayers[1].player, data.gamePlayers[0].player];
+
+  $("#playerInfo").text(
+    playerInfo[0].email + "(you) vs " + playerInfo[1].email
+  );
+
+  data.ships.forEach(function (shipPiece) {
+    shipPiece.locations.forEach(function (shipLocation) {
+      if (isHit(shipLocation, data.salvoes, playerInfo[0].id) != 0) {
+        $("#B_" + shipLocation).addClass("ship-piece-hited");
+        $("#B_" + shipLocation).text(
+          isHit(shipLocation, data.salvoes, playerInfo[0].id)
+        );
+      } else $("#B_" + shipLocation).addClass("ship-piece");
+    });
   });
-  for (let i = 1; i <= 10; i++) {
-    item2 = document.createElement("td");
-    item2.appendChild(document.createTextNode(i));
-    item.appendChild(item2);
-  }
-  document.getElementById("table1").appendChild(item);
-  for (let y = 1; y <= 10; y++) {
-    item = document.createElement("tr");
-    item2 = document.createElement("td");
-    item2.appendChild(
-      document.createTextNode((y + 9).toString(36).toUpperCase())
-    );
-    item.appendChild(item2);
-    for (let x = 1; x <= 10; x++) {
-      item2 = document.createElement("td");
-      res.forEach(function (ele) {
-        if (
-          ele[0].localeCompare((y + 9).toString(36).toUpperCase()) == 0 &&
-          ele[1].localeCompare(x.toString()) == 0
-        ) {
-          item2.appendChild(document.createTextNode("F"));
-          item2.style.backgroundColor = "#0000FF";
-        } else {
-          item2.appendChild(document.createTextNode(" "));
-        }
+  data.salvoes.forEach(function (salvo) {
+    if (playerInfo[0].playerId === salvo.player) {
+      salvo.locations.forEach(function (location) {
+        $("#S_" + location).addClass("salvo-piece");
+        $("#S_" + location).text(salvo.turn);
       });
-      item.appendChild(item2);
+    } else {
+      salvo.locations.forEach(function (location) {
+        $("#B_" + location).addClass("salvo");
+      });
     }
-    document.getElementById("table1").appendChild(item);
-  }
-  document.getElementById("para").innerHTML = game.gamePlayers
-    .map(function (p) {
-      let aux = p.player.email;
-      if (0 == urlParams.get("gp").localeCompare(p.gamePlayerId.toString())) {
-        aux = aux.concat(" (YOU)");
-      }
-      return aux;
-    })
-    .join(" vs ");
+  });
+
+}
+
+function isHit(shipLocation, salvoes, playerId) {
+  let turn = 0;
+  salvoes.forEach(function (salvo) {
+    if (salvo.player != playerId)
+      salvo.locations.forEach(function (location) {
+        if (shipLocation === location) turn = salvo.turn;
+      });
+  });
+  return turn;
 }
