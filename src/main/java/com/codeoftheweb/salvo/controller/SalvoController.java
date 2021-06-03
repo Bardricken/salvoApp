@@ -5,15 +5,15 @@ import com.codeoftheweb.salvo.model.GamePlayer;
 import com.codeoftheweb.salvo.repository.GamePlayerRepository;
 import com.codeoftheweb.salvo.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api")
@@ -23,12 +23,12 @@ public class SalvoController {
     @Autowired
     private GamePlayerRepository repoGamePLayer;
 
-    @RequestMapping("/games")
+    @GetMapping("/games")
     public List<Object> getGames() {
-        return repoGame.findAll().stream().map(Game::makeGameDTO).collect(Collectors.toList());
+        return repoGame.findAll().stream().map(Game::makeGameDTO).collect(toList());
     }
 
-    @RequestMapping("/game_view/{nn}")
+    @GetMapping("/game_view/{nn}")
     public Map<String, Object> getGameView(@PathVariable Long nn) {
         Optional<GamePlayer> gp = repoGamePLayer.findById(nn);
         if (gp.isPresent()) {
@@ -37,5 +37,4 @@ public class SalvoController {
             return null;
         }
     }
-
 }

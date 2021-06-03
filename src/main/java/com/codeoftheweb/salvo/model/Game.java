@@ -2,11 +2,10 @@ package com.codeoftheweb.salvo.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import static java.util.stream.Collectors.toList;
-
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Entity
 public class Game {
@@ -20,6 +19,9 @@ public class Game {
     //Relations
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
     Set<GamePlayer> gamePlayers;
+
+    @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
+    Set<Score> scores;
 
     //Constructors
     public Game() {
@@ -42,11 +44,16 @@ public class Game {
         return new ArrayList<>(this.gamePlayers);
     }
 
+    public List<Score> getScores() {
+        return new ArrayList<>(this.scores);
+    }
+
     public Map<String, Object> makeGameDTO() {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         dto.put("gameId", this.getId());
         dto.put("created", this.getCreationDate());
-        dto.put("gamePlayers", getGamePlayers().stream().map(GamePlayer::makeGamePlayerDTO).collect(Collectors.toList()));
+        dto.put("gamePlayers", getGamePlayers().stream().map(GamePlayer::makeGamePlayerDTO).collect(toList()));
+        dto.put("scores", getScores().stream().map(Score::makeScoreDTO).collect(toList()));
         return dto;
     }
 
@@ -54,9 +61,9 @@ public class Game {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         dto.put("gameId", this.getId());
         dto.put("created", this.getCreationDate());
-        dto.put("gamePlayers", getGamePlayers().stream().map(GamePlayer::makeGamePlayerDTO).collect(Collectors.toList()));
-        dto.put("ships", gamePlayer.getShips().stream().map(Ship::makeShipDTO).collect(Collectors.toList()));
-        dto.put("salvoes", getGamePlayers().stream().map(GamePlayer::getSalvoes).flatMap(Collection::stream).collect(Collectors.toList()));
+        dto.put("gamePlayers", getGamePlayers().stream().map(GamePlayer::makeGamePlayerDTO).collect(toList()));
+        dto.put("ships", gamePlayer.getShips().stream().map(Ship::makeShipDTO).collect(toList()));
+        dto.put("salvoes", getGamePlayers().stream().map(GamePlayer::getSalvoes).flatMap(Collection::stream).collect(toList()));
         return dto;
     }
 

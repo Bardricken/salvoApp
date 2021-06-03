@@ -4,7 +4,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Entity
 public class GamePlayer {
@@ -66,6 +67,7 @@ public class GamePlayer {
         dto.put("gamePlayerId", this.getId());
         dto.put("joinDate", this.getJoinDate());
         dto.put("player", this.getPlayer().makePlayerDTO());
+        dto.put("score", getPlayer().getScores().stream().map(Score::getScore).collect(toList()));
         return dto;
     }
 
@@ -74,7 +76,7 @@ public class GamePlayer {
     }
 
     public List<Object> getSalvoes() {
-        return salvo.stream().map(Salvo::makeSalvoDTO).collect(Collectors.toList());
+        return salvo.stream().map(Salvo::makeSalvoDTO).collect(toList());
     }
 
     //Setters

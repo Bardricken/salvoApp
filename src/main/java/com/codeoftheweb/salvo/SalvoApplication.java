@@ -18,7 +18,7 @@ public class SalvoApplication {
     }
 
     @Bean
-    public CommandLineRunner initData(PlayerRepository repoPlayer, GameRepository repoGame, GamePlayerRepository repoGamePlayer, ShipRepository repoShip, SalvoRepository repoSalvo) {
+    public CommandLineRunner initData(PlayerRepository repoPlayer, GameRepository repoGame, GamePlayerRepository repoGamePlayer, ShipRepository repoShip, SalvoRepository repoSalvo, ScoreRepository repoScore) {
         return (args) -> {
             Player player1 = new Player("juaas@gmail.com");
             Player player2 = new Player("karen@gmail.com");
@@ -26,6 +26,8 @@ public class SalvoApplication {
             Player player4 = new Player("emilia@gmail.com");
             Player player5 = new Player("luis@gmail.com");
             Player player6 = new Player("david@gmail.com");
+
+            //Creacion de Player
             repoPlayer.save(player1);
             repoPlayer.save(player2);
             repoPlayer.save(player3);
@@ -36,6 +38,8 @@ public class SalvoApplication {
             Game game1 = new Game(new Date());
             Game game2 = new Game(Date.from(new Date().toInstant().plusSeconds(3600)));
             Game game3 = new Game(Date.from(new Date().toInstant().plusSeconds(7200)));
+
+            //Creacion de Game
             repoGame.save(game1);
             repoGame.save(game2);
             repoGame.save(game3);
@@ -46,6 +50,8 @@ public class SalvoApplication {
             GamePlayer gmp4 = new GamePlayer(game2, player3, new Date());
             GamePlayer gmp5 = new GamePlayer(game3, player5, new Date());
             GamePlayer gmp6 = new GamePlayer(game3, player6, new Date());
+
+            //Creacion de GamePlayer
             repoGamePlayer.save(gmp1);
             repoGamePlayer.save(gmp2);
             repoGamePlayer.save(gmp3);
@@ -53,6 +59,7 @@ public class SalvoApplication {
             repoGamePlayer.save(gmp5);
             repoGamePlayer.save(gmp6);
 
+            //Creacion de Ship
             repoShip.save(new Ship(gmp1, "Destructor", Arrays.asList("H7", "I2", "J1", "A9")));
             repoShip.save(new Ship(gmp2, "Patrullero", Arrays.asList("F10", "F3", "B1", "J2")));
             repoShip.save(new Ship(gmp3, "Destructor", Arrays.asList("H7", "I2", "C1", "D2")));
@@ -60,12 +67,19 @@ public class SalvoApplication {
             repoShip.save(new Ship(gmp5, "Destructor", Arrays.asList("H7", "I2", "D1", "F2")));
             repoShip.save(new Ship(gmp6, "Patrullero", Arrays.asList("G6", "J2", "B1", "G5")));
 
+            //Creacion de Salvo
             repoSalvo.save(new Salvo(gmp1, 1, Arrays.asList("H7", "A2")));
             repoSalvo.save(new Salvo(gmp1, 2, Arrays.asList("G1", "A9")));
             repoSalvo.save(new Salvo(gmp2, 1, Arrays.asList("F10", "J2")));
             repoSalvo.save(new Salvo(gmp2, 2, Arrays.asList("B1", "A2")));
             repoSalvo.save(new Salvo(gmp3, 1, Arrays.asList("H7", "I2")));
             repoSalvo.save(new Salvo(gmp4, 2, Arrays.asList("C1", "D2")));
+
+            //Creacion de Score
+            repoScore.save(new Score(1.0, new Date(), game1, player1));
+            repoScore.save(new Score(0.5, new Date(), game1, player2));
+            repoScore.save(new Score(0.0, new Date(), game2, player3));
+            repoScore.save(new Score(1.0, new Date(), game2, player4));
         };
     }
 }

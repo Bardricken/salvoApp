@@ -3,9 +3,13 @@ package com.codeoftheweb.salvo.model;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Entity
 public class Player {
@@ -19,6 +23,9 @@ public class Player {
     //Relations
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
     Set<GamePlayer> gamePlayers;
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
+    Set<Score> scores;
 
     //Constructors
     public Player() {
@@ -35,6 +42,10 @@ public class Player {
 
     public String getUserName() {
         return userName;
+    }
+
+    public Set<Score> getScores() {
+        return scores;
     }
 
     public Map<String, Object> makePlayerDTO() {
