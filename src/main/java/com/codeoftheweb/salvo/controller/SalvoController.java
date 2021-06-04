@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import static java.util.stream.Collectors.toList;
 
 @RestController
@@ -24,8 +26,10 @@ public class SalvoController {
     private GamePlayerRepository repoGamePLayer;
 
     @GetMapping("/games")
-    public List<Object> getGames() {
-        return repoGame.findAll().stream().map(Game::makeGameDTO).collect(toList());
+    public Map<String, Object> getGames() {
+        Map<String, Object> dto = new LinkedHashMap<String, Object>();
+        dto.put("games", repoGame.findAll().stream().map(Game::makeGameDTO).collect(toList()));
+        return dto;
     }
 
     @GetMapping("/game_view/{nn}")

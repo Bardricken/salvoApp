@@ -3,10 +3,7 @@ package com.codeoftheweb.salvo.model;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -46,6 +43,14 @@ public class Player {
 
     public Set<Score> getScores() {
         return scores;
+    }
+
+    public Score getScore(Game game) {
+        Optional<Score> score = getScores().stream().filter(s -> s.getGame().equals(game)).findFirst();
+        if (score.isPresent()) {
+            return score.get();
+        }
+        return null;
     }
 
     public Map<String, Object> makePlayerDTO() {

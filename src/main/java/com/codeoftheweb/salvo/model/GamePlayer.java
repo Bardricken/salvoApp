@@ -63,11 +63,16 @@ public class GamePlayer {
     }
 
     public Map<String, Object> makeGamePlayerDTO() {
+        Score score = getPlayer().getScore(getGame());
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         dto.put("gamePlayerId", this.getId());
         dto.put("joinDate", this.getJoinDate());
         dto.put("player", this.getPlayer().makePlayerDTO());
-        dto.put("score", getPlayer().getScores().stream().map(Score::getScore).collect(toList()));
+        if (score != null) {
+            dto.put("score", score.getScore());
+        } else {
+            dto.put("score", 0);
+        }
         return dto;
     }
 
