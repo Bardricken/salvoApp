@@ -50,7 +50,7 @@ public class Game {
 
     public Map<String, Object> makeGameDTO() {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
-        dto.put("gameId", this.getId());
+        dto.put("id", this.getId());
         dto.put("created", this.getCreationDate());
         dto.put("gamePlayers", getGamePlayers().stream().map(GamePlayer::makeGamePlayerDTO).collect(toList()));
         dto.put("scores", getScores().stream().map(Score::makeScoreDTO).collect(toList()));
@@ -59,7 +59,7 @@ public class Game {
 
     public Map<String, Object> makeGameShipDTO(GamePlayer gamePlayer) {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
-        dto.put("gameId", this.getId());
+        dto.put("id", this.getId());
         dto.put("created", this.getCreationDate());
         dto.put("gamePlayers", getGamePlayers().stream().map(GamePlayer::makeGamePlayerDTO).collect(toList()));
         dto.put("ships", gamePlayer.getShips().stream().map(Ship::makeShipDTO).collect(toList()));

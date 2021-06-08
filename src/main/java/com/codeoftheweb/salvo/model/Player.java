@@ -4,9 +4,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @Entity
 public class Player {
@@ -15,7 +12,8 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
-    private String userName;
+    private String email;
+    private String password;
 
     //Relations
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
@@ -28,8 +26,9 @@ public class Player {
     public Player() {
     }
 
-    public Player(String userName) {
-        this.userName = userName;
+    public Player(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     //Getters
@@ -37,8 +36,12 @@ public class Player {
         return id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public Set<Score> getScores() {
@@ -55,8 +58,8 @@ public class Player {
 
     public Map<String, Object> makePlayerDTO() {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
-        dto.put("playerId", this.getId());
-        dto.put("email", this.getUserName());
+        dto.put("id", this.getId());
+        dto.put("email", this.getEmail());
         return dto;
     }
 
@@ -65,8 +68,12 @@ public class Player {
     }*/
 
     //Setters
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     //Add

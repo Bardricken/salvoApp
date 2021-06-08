@@ -65,7 +65,7 @@ public class GamePlayer {
     public Map<String, Object> makeGamePlayerDTO() {
         Score score = getPlayer().getScore(getGame());
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
-        dto.put("gamePlayerId", this.getId());
+        dto.put("id", this.getId());
         dto.put("joinDate", this.getJoinDate());
         dto.put("player", this.getPlayer().makePlayerDTO());
         if (score != null) {
