@@ -41,7 +41,7 @@ function updateView(data) {
     });
   });
   data.salvoes.forEach(function (salvo) {
-    if (playerInfo[0].playerId === salvo.player) {
+    if (playerInfo[0].id === salvo.player) {
       salvo.locations.forEach(function (location) {
         $("#S_" + location).addClass("salvo-piece");
         $("#S_" + location).text(salvo.turn);
