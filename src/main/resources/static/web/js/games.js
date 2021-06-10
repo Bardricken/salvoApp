@@ -1,7 +1,7 @@
-let data;
-let gamesData;
-let playersArray;
-let submitButton;
+var data;
+var gamesData;
+var playersArray;
+var submitButton;
 
 updateJson();
 
@@ -25,6 +25,7 @@ $("#login-form").on("submit", function (event) {
         // $("#username").val("");
         $("#password").val("");
         updateJson();
+        $("#createGameForm").show();
       })
       .fail(function () {
         console.log("login failed");
@@ -37,7 +38,7 @@ $("#login-form").on("submit", function (event) {
       .always(function () {});
   } else if (submitButton == "signup") {
     $.post("/api/players", {
-      username: $("#username").val(),
+      email: $("#username").val(),
       password: $("#password").val(),
     })
       .done(function (data) {
@@ -54,6 +55,7 @@ $("#login-form").on("submit", function (event) {
             $("#username").val("");
             $("#password").val("");
             updateJson();
+            $("#createGameForm").show();
           })
           .fail(function () {
             console.log("login failed");
@@ -94,11 +96,11 @@ $("#logout-form").on("submit", function (event) {
     .always(function () {});
 });
 
-$("#createGame").on("submit", function (event) {
+$("#createGame").click(function (event) {
   event.preventDefault();
   $.post("/api/games")
     .done(function (data) {
-      console.log(data);
+      console.log("Miren mi juego ", data);
       console.log("game created");
       gameViewUrl = "/web/game.html?gp=" + data.gpid;
       $("#gameCreatedSuccess").show("slow").delay(2000).hide("slow");
@@ -110,8 +112,7 @@ $("#createGame").on("submit", function (event) {
       console.log("game creation failed");
       $("#errorSignup").text(data.responseJSON.error);
       $("#errorSignup").show("slow").delay(4000).hide("slow");
-    })
-    .always(function () {});
+    });
 });
 
 function fetchJson(url) {
@@ -129,15 +130,14 @@ function fetchJson(url) {
 function updateJson() {
   fetchJson("/api/games")
     .then(function (json) {
-      console.log(json)
       // do something with the JSON
+      console.log(json);
       data = json;
       gamesData = data.games;
       updateView();
     })
     .catch(function (error) {
       // do something getting JSON fails
-      console.log("FALLA EL FETCH!")
     });
 }
 
@@ -149,6 +149,7 @@ function updateView() {
     $("#currentPlayer").text(data.player);
     $("#logout-form").hide("slow");
     $("#login-form").show("slow");
+    $("#createGameForm").hide();
   } else {
     $("#currentPlayer").text(data.player.email);
     $("#login-form").hide("slow");
@@ -242,7 +243,7 @@ function showGamesTable(gamesData) {
       .done(function (data) {
         console.log(data);
         console.log("game joined");
-        gameViewUrl = "/web/game_2.html?gp=" + data.gpid;
+        gameViewUrl = "/web/game.html?gp=" + data.gpid;
         $("#gameJoinedSuccess").show("slow").delay(2000).hide("slow");
         setTimeout(function () {
           location.href = gameViewUrl;

@@ -9,7 +9,7 @@ public interface PlayerService {
 
     List<Player> getPlayer();
 
-    Player updatePlayer(Player gamePlayer);
+    Player updatePlayer(Player player);
 
     boolean deletePlayer(Long id);
 

@@ -170,7 +170,6 @@ public class SalvoApplication extends SpringBootServletInitializer {
             repoSalvo.save(new Salvo(gmp10, 1, Arrays.asList("B5", "B6", "C7")));
             repoSalvo.save(new Salvo(gmp9, 2, Arrays.asList("G6", "G7", "G8")));
             repoSalvo.save(new Salvo(gmp10, 2, Arrays.asList("C6", "D6", "E6")));
-            repoSalvo.save(new Salvo(null, 3, Arrays.asList("")));
             repoSalvo.save(new Salvo(gmp10, 3, Arrays.asList("H1", "H8")));
 
             //Scores
@@ -211,9 +210,6 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 @EnableWebSecurity
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    PlayerServiceImplement servPlayer;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
