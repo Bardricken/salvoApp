@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -20,17 +17,13 @@ public class PlayerController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/players")
-    public ResponseEntity<?> register(@RequestParam String email, @RequestParam String password) {
-        try {
-            if (playerServiceImplement.findPlayerByEmail(email) == null) {
-                Player player = new Player(email, passwordEncoder.encode(password));
-                playerServiceImplement.savePlayer(player);
-                return new ResponseEntity(HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity("Email in use", HttpStatus.FORBIDDEN);
-            }
-        } catch (Exception exception) {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Object> register(@RequestParam String email, @RequestParam String password) {
+        if (playerServiceImplement.findPlayerByEmail(email) == null) {
+            Player player = new Player(email, passwordEncoder.encode(password));
+            playerServiceImplement.savePlayer(player);
+            return new ResponseEntity(HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity("Email in use", HttpStatus.FORBIDDEN);
         }
     }
 }

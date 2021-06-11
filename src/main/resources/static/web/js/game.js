@@ -4,14 +4,14 @@ developed by Berenguer Pou / Ubiqum Barcelona (berenguer@ubiqum.com)
 Last update: June, 11, 2018
 */
 
-var gamePlayerData = {};
-var errorMsg;
-var you = "";
-var viewer = "";
-var youID = "";
-var salvoJSON;
-var salvoPositions = [];
-var waitState = false;
+let gamePlayerData = {};
+let errorMsg;
+let you = "";
+let viewer = "";
+let youID = "";
+let salvoJSON;
+let salvoPositions = [];
+let waitState = false;
 
 refreshGameView(makeUrl());
 
@@ -32,22 +32,22 @@ $("#logoutButton").on("click", function (event) {
 });
 
 function getParameterByName(name) {
-  var match = RegExp("[?&]" + name + "=([^&]*)").exec(window.location.search);
+  let match = RegExp("[?&]" + name + "=([^&]*)").exec(window.location.search);
   return match && decodeURIComponent(match[1].replace(/\+/g, " "));
 }
 
 function makeUrl() {
-  var gamePlayerID = getParameterByName("gp");
+  let gamePlayerID = getParameterByName("gp");
   return "/api/game_view/" + gamePlayerID;
 }
 
 function makePostUrl() {
-  var gamePlayerID = getParameterByName("gp");
+  let gamePlayerID = getParameterByName("gp");
   return "/api/games/players/" + gamePlayerID + "/ships";
 }
 
 function makePostUrlSalvoes() {
-  var gamePlayerID = getParameterByName("gp");
+  let gamePlayerID = getParameterByName("gp");
   return "/api/games/players/" + gamePlayerID + "/salvoes";
 }
 
@@ -224,7 +224,7 @@ function showSelf(gamePlayerData) {
     }
     // console.log(ship.type);
     ship.locations.forEach(function (location) {
-      var cellID = "#p1_" + location;
+      let cellID = "#p1_" + location;
       $(cellID).addClass("shipCell");
       //     console.log(location);
     });
@@ -233,7 +233,7 @@ function showSelf(gamePlayerData) {
   gamePlayerData.salvoes.forEach(function (salvo) {
     //  console.log("Turn: " + salvo.turn);
     salvo.locations.forEach(function (location) {
-      var cellID;
+      let cellID;
       if (salvo.player == youID) {
         cellID = "#" + location;
         $(cellID).addClass("salvoCell");
@@ -264,10 +264,10 @@ function showSelf(gamePlayerData) {
 }
 
 function createTable(player) {
-  var prova = 0;
-  var l = 0;
-  var gridLabel;
-  var gridId;
+  let prova = 0;
+  let l = 0;
+  let gridLabel;
+  let gridId;
   if (player == "p1_") {
     gridLabel = $('<p class="gridLabel">Self grid</p>');
     gridId = "#p1Grid";
@@ -275,22 +275,22 @@ function createTable(player) {
     gridLabel = $('<p class="gridLabel">Opponent grid</p>');
     gridId = "#p2Grid";
   }
-  var mytable = $("<table></table>").attr({
+  let mytable = $("<table></table>").attr({
     id: "basicTable",
     class: "",
   });
-  var rows = 10;
-  var cols = 10;
-  var tr = [];
+  let rows = 10;
+  let cols = 10;
+  let tr = [];
 
-  for (var i = 0; i <= rows; i++) {
-    var row = $("<tr></tr>")
+  for (let i = 0; i <= rows; i++) {
+    let row = $("<tr></tr>")
       .attr({
         class: ["class1"].join(" "),
       })
       .appendTo(mytable);
     if (i == 0) {
-      for (var j = 0; j < cols + 1; j++) {
+      for (let j = 0; j < cols + 1; j++) {
         $("<th></th>")
           .text(j)
           .attr({
@@ -299,7 +299,7 @@ function createTable(player) {
           .appendTo(row);
       }
     } else {
-      for (var j = 0; j < cols; j++) {
+      for (let j = 0; j < cols; j++) {
         if (j == 0) {
           $("<th></th>")
             .text(String.fromCharCode(65 + l++))
@@ -458,7 +458,7 @@ function makeSalvoJSON() {
 }
 
 function makeGameRecordTable(hitsArray, gameRecordTableId) {
-  var tableId = "#" + gameRecordTableId + " tbody";
+  let tableId = "#" + gameRecordTableId + " tbody";
   $(tableId).empty();
   let shipsAfloat = 5;
   let playerTag;
@@ -555,12 +555,12 @@ function makeGameRecordTable(hitsArray, gameRecordTableId) {
 function addDamagesIcons(numberOfHits, hitOrMissed) {
   let damagesIcons = "";
   if (hitOrMissed === "missed") {
-    for (var i = 0; i < numberOfHits; i++) {
+    for (let i = 0; i < numberOfHits; i++) {
       damagesIcons += "<img class='hitblast' src='img/missed.png'>";
     }
   }
   if (hitOrMissed === "hit") {
-    for (var i = 0; i < numberOfHits; i++) {
+    for (let i = 0; i < numberOfHits; i++) {
       damagesIcons += "<img class='hitblast' src='img/redhit.png'>";
     }
   }
