@@ -59,4 +59,17 @@ public class Salvo {
         dto.put("locations", this.getLocations());
         return dto;
     }
+
+    //Setters
+    public void setTurn(int turn) {
+        this.turn = turn;
+    }
+
+    public void setLocations(List<String> locations) {
+        this.locations = locations;
+    }
+
+    public void setGpSalvo(GamePlayer gpSalvo) {
+        this.gpSalvo = gpSalvo;
+    }
 }

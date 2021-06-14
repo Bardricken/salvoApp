@@ -30,11 +30,11 @@ public class GameController {
     @GetMapping("/games")
     public Map<String, Object> getGames(Authentication authentication) {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
-        if (isGuest(authentication)) {
-            dto.put("player", "Guest");
-        } else {
+        if (!isGuest(authentication)) {
             Player player = playerService.findPlayerByEmail(authentication.getName());
             dto.put("player", player.makePlayerDTO());
+        } else {
+            dto.put("player", "Guest");
         }
         dto.put("games", gameService.getGame().stream().map(Game::makeGameDTO).collect(toList()));
         return dto;
@@ -67,17 +67,17 @@ public class GameController {
 
     @PostMapping("/game/{nn}/players")
     public ResponseEntity<Object> joinGame(@PathVariable Long nn, Authentication authentication) {
-        boolean existe = false;
-        long jugadores = 0;
+        boolean exist;
+        long counter;
 
         if (!isGuest(authentication)) {
             Game game = gameService.findGameById(nn);
             if (game != null) {
                 Player player = playerService.findPlayerByEmail(authentication.getName());
-                jugadores = game.getPlayers().stream().count();
-                existe = game.getPlayers().contains(player.getId());
+                counter = game.getPlayers().stream().count();
+                exist = game.getPlayers().contains(player.getId());
 
-                if (jugadores < 2 && !existe) {
+                if (counter < 2 && !exist) {
                     GamePlayer gp = gamePlayerService.saveGamePlayer(new GamePlayer(game, player, new Date()));
                     return new ResponseEntity<>(makeMap("gpid", gp.getId()), HttpStatus.CREATED);
                 } else {
@@ -91,11 +91,11 @@ public class GameController {
         }
     }
 
-    private boolean isGuest(Authentication authentication) {
+    public boolean isGuest(Authentication authentication) {
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
     }
 
-    private Map<String, Object> makeMap(String key, Object value) {
+    public Map<String, Object> makeMap(String key, Object value) {
         Map<String, Object> map = new HashMap<>();
         map.put(key, value);
         return map;

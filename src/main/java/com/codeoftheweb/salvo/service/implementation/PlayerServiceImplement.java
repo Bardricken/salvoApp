@@ -20,7 +20,7 @@ public class PlayerServiceImplement implements PlayerService {
 
     @Override
     public List<Player> getPlayer() {
-        return null;
+        return playerRepository.findAll();
     }
 
     @Override

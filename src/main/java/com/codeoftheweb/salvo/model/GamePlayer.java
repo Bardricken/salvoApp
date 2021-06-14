@@ -92,4 +92,14 @@ public class GamePlayer {
     public void setPlayer(Player player) {
         this.player = player;
     }
+
+    public void addShips(Ship nShip) {
+        nShip.setGamePlayer(this);
+        this.ship.add(nShip);
+    }
+
+    public void addSalvoes(Salvo nSalvo) {
+        nSalvo.setGpSalvo(this);
+        this.salvo.add(nSalvo);
+    }
 }
