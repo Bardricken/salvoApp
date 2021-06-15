@@ -40,7 +40,7 @@ public class Game {
         return creationDate;
     }
 
-    private List<GamePlayer> getGamePlayers() {
+    public List<GamePlayer> getGamePlayers() {
         return new ArrayList<>(this.gamePlayers);
     }
 

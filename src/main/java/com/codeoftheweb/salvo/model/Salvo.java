@@ -19,7 +19,7 @@ public class Salvo {
 
     @ElementCollection
     @Column(name = "locations")
-    private List<String> locations = new ArrayList<>();
+    private List<String> cells = new ArrayList<>();
 
     //Relations
     @ManyToOne(fetch = FetchType.EAGER)
@@ -29,9 +29,9 @@ public class Salvo {
     public Salvo() {
     }
 
-    public Salvo(GamePlayer gamePlayer, int turn, List<String> locations) {
+    public Salvo(GamePlayer gamePlayer, int turn, List<String> cells) {
         this.turn = turn;
-        this.locations = locations;
+        this.cells = cells;
         this.gpSalvo = gamePlayer;
     }
 
@@ -44,8 +44,8 @@ public class Salvo {
         return turn;
     }
 
-    public List<String> getLocations() {
-        return locations;
+    public List<String> getCells() {
+        return cells;
     }
 
     public GamePlayer getGamePlayer() {
@@ -56,7 +56,7 @@ public class Salvo {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         dto.put("turn", this.getTurn());
         dto.put("player", this.getGamePlayer().getPlayer().getId());
-        dto.put("locations", this.getLocations());
+        dto.put("locations", this.getCells());
         return dto;
     }
 
@@ -65,8 +65,8 @@ public class Salvo {
         this.turn = turn;
     }
 
-    public void setLocations(List<String> locations) {
-        this.locations = locations;
+    public void setCells(List<String> cells) {
+        this.cells = cells;
     }
 
     public void setGpSalvo(GamePlayer gpSalvo) {

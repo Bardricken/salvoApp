@@ -84,6 +84,10 @@ public class GamePlayer {
         return salvo.stream().map(Salvo::makeSalvoDTO).collect(toList());
     }
 
+    public List<Salvo> getSalvs() {
+        return new ArrayList<>(this.salvo);
+    }
+
     //Setters
     public void setGame(Game game) {
         this.game = game;

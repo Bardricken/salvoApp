@@ -7,6 +7,7 @@ import com.codeoftheweb.salvo.model.Salvo;
 import com.codeoftheweb.salvo.model.Ship;
 import com.codeoftheweb.salvo.service.implementation.GamePlayerServiceImplement;
 import com.codeoftheweb.salvo.service.implementation.PlayerServiceImplement;
+import com.codeoftheweb.salvo.service.implementation.SalvoServiceImplement;
 import com.codeoftheweb.salvo.service.implementation.ShipServiceImplement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -26,6 +28,8 @@ public class PlayerController {
     private GamePlayerServiceImplement gamePlayerService;
     @Autowired
     private ShipServiceImplement shipService;
+    @Autowired
+    private SalvoServiceImplement salvoService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -69,26 +73,31 @@ public class PlayerController {
     }
 
     @PostMapping("/games/players/{nn}/salvoes")
-    public ResponseEntity<Object> addSalvoes(@PathVariable long nn, @RequestBody Salvo salvo, Authentication authentication) {
+    public ResponseEntity<Object> addSalvoes(@PathVariable long nn, @RequestBody Salvo nSalvo, Authentication authentication) {
         if (!Util.isGuest(authentication)) {
             GamePlayer gamePlayer = gamePlayerService.findGamePlayerById(nn);
             Player player = playerService.findPlayerByEmail(authentication.getName());
             if (gamePlayer != null) {
                 if (gamePlayer.getPlayer().getId() == player.getId()) {
-                    int hits = salvo.getLocations().size();
+                    int hits = nSalvo.getCells().size();
                     if (hits >= 1 && hits <= 5) {
-                        int turn = salvo.getTurn();
-//                        if (turn == 0 || ) {
-//                            turn += 1;
-//                        }else{
-//                            turn
-//                        }
-
-//                        for (Ship s : ships) {
-//                            gamePlayer.addShips(s);
-//                            shipService.saveShip(s);
-//                        }
-                        return new ResponseEntity<>(Util.makeMap("OK", "Sus barcos han sido colocados exitosamente"), HttpStatus.CREATED);
+                        int playerTurn = gamePlayer.getSalvs().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
+                        Optional<GamePlayer> player2 = gamePlayer.getGame().getGamePlayers().stream().filter(gp -> gp.getPlayer() != gamePlayer.getPlayer()).findFirst();
+                        int opponentTurn = player2.get().getSalvs().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
+                        if (playerTurn <= opponentTurn) {
+                            int turn;
+                            if (playerTurn == 0) {
+                                turn = 1;
+                            } else {
+                                turn = playerTurn + 1;
+                            }
+                            nSalvo.setTurn(turn);
+                            gamePlayer.addSalvoes(nSalvo);
+                            salvoService.saveSalvo(nSalvo);
+                            return new ResponseEntity<>(Util.makeMap("OK", "El salvo de registro correctamente"), HttpStatus.CREATED);
+                        } else {
+                            return new ResponseEntity<>(Util.makeMap("error", "Espera a que sea tu turno"), HttpStatus.FORBIDDEN);
+                        }
                     } else {
                         return new ResponseEntity<>(Util.makeMap("error", "Exediste el límite de disparos"), HttpStatus.FORBIDDEN);
                     }
