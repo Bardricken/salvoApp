@@ -1,6 +1,7 @@
 package com.codeoftheweb.salvo.model;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.*;
@@ -57,17 +58,22 @@ public class Game {
         return dto;
     }
 
-    public Map<String, Object> makeGameViewDTO(GamePlayer gamePlayer) {
+    public Map<String, Object> makeGameViewDTO(GamePlayer self) {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         Map<String, Object> hits = new LinkedHashMap<>();
-        hits.put("self", new ArrayList<>());
-        hits.put("opponent", new ArrayList<>());
+        Optional<GamePlayer> opponent = self.getGame().getGamePlayers().stream().filter(gp -> gp.getPlayer() != self.getPlayer()).findFirst();
+        hits.put("self", self.getSalvoes().stream().map(s -> s.makeHitsDTO(self)).collect(toList()));
+        if (opponent.isPresent()) {
+            hits.put("opponent", opponent.get().getSalvoes().stream().map(s -> s.makeHitsDTO(opponent.get())).collect(toList()));
+        } else {
+            hits.put("opponent", new ArrayList<>());
+        }
         dto.put("id", this.getId());
         dto.put("created", this.getCreationDate());
         dto.put("gameState", "PLACESHIPS");
         dto.put("gamePlayers", getGamePlayers().stream().map(GamePlayer::makeGamePlayerDTO).collect(toList()));
-        dto.put("ships", gamePlayer.getShips().stream().map(Ship::makeShipDTO).collect(toList()));
-        dto.put("salvoes", getGamePlayers().stream().map(GamePlayer::getSalvoes).flatMap(Collection::stream).collect(toList()));
+        dto.put("ships", self.getShips().stream().map(Ship::makeShipDTO).collect(toList()));
+        dto.put("salvoes", getGamePlayers().stream().map(GamePlayer::makeSalvoDTO).flatMap(Collection::stream).collect(toList()));
         dto.put("hits", hits);
         return dto;
     }

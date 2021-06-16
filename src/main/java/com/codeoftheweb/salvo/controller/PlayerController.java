@@ -83,8 +83,8 @@ public class PlayerController {
                     if (gamePlayer.getPlayer().getId() == player.getId()) {
                         int hits = nSalvo.getCells().size();
                         if (hits >= 1 && hits <= 5) {
-                            int playerTurn = gamePlayer.getSalvs().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
-                            int opponentTurn = player2.get().getSalvs().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
+                            int playerTurn = gamePlayer.getSalvoes().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
+                            int opponentTurn = player2.get().getSalvoes().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
                             if (playerTurn <= opponentTurn) {
                                 int turn;
                                 if (playerTurn == 0) {

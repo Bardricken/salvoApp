@@ -80,11 +80,11 @@ public class GamePlayer {
         return new ArrayList<>(this.ship);
     }
 
-    public List<Object> getSalvoes() {
+    public List<Object> makeSalvoDTO() {
         return salvo.stream().map(Salvo::makeSalvoDTO).collect(toList());
     }
 
-    public List<Salvo> getSalvs() {
+    public List<Salvo> getSalvoes() {
         return new ArrayList<>(this.salvo);
     }
 

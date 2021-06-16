@@ -54,12 +54,11 @@ public class GameController {
 
     @GetMapping("/game_view/{nn}")
     public ResponseEntity<Object> getGameView(@PathVariable Long nn, Authentication authentication) {
-
-        GamePlayer gamePlayer = gamePlayerService.findGamePlayerById(nn);
+        GamePlayer self = gamePlayerService.findGamePlayerById(nn);
         Player player = playerService.findPlayerByEmail(authentication.getName());
 
-        if (gamePlayer.getPlayer().getId() == player.getId()) {
-            return ResponseEntity.ok(gamePlayer.getGame().makeGameViewDTO(gamePlayer));
+        if (self.getPlayer().getId() == player.getId()) {
+            return ResponseEntity.ok(self.getGame().makeGameViewDTO(self));
         } else {
             return new ResponseEntity<>(Util.makeMap("error", "No posee permisos"), HttpStatus.UNAUTHORIZED);
         }
