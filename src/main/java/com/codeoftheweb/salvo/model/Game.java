@@ -57,7 +57,7 @@ public class Game {
         return dto;
     }
 
-    public Map<String, Object> makeGameShipDTO(GamePlayer gamePlayer) {
+    public Map<String, Object> makeGameViewDTO(GamePlayer gamePlayer) {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         Map<String, Object> hits = new LinkedHashMap<>();
         hits.put("self", new ArrayList<>());

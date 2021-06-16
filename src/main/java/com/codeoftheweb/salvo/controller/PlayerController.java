@@ -77,35 +77,39 @@ public class PlayerController {
         if (!Util.isGuest(authentication)) {
             GamePlayer gamePlayer = gamePlayerService.findGamePlayerById(nn);
             Player player = playerService.findPlayerByEmail(authentication.getName());
-            if (gamePlayer != null) {
-                if (gamePlayer.getPlayer().getId() == player.getId()) {
-                    int hits = nSalvo.getCells().size();
-                    if (hits >= 1 && hits <= 5) {
-                        int playerTurn = gamePlayer.getSalvs().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
-                        Optional<GamePlayer> player2 = gamePlayer.getGame().getGamePlayers().stream().filter(gp -> gp.getPlayer() != gamePlayer.getPlayer()).findFirst();
-                        int opponentTurn = player2.get().getSalvs().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
-                        if (playerTurn <= opponentTurn) {
-                            int turn;
-                            if (playerTurn == 0) {
-                                turn = 1;
+            Optional<GamePlayer> player2 = gamePlayer.getGame().getGamePlayers().stream().filter(gp -> gp.getPlayer() != gamePlayer.getPlayer()).findFirst();
+            if (player2.isPresent()) {
+                if (gamePlayer != null) {
+                    if (gamePlayer.getPlayer().getId() == player.getId()) {
+                        int hits = nSalvo.getCells().size();
+                        if (hits >= 1 && hits <= 5) {
+                            int playerTurn = gamePlayer.getSalvs().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
+                            int opponentTurn = player2.get().getSalvs().stream().mapToInt(s -> s.getTurn()).max().orElse(0);
+                            if (playerTurn <= opponentTurn) {
+                                int turn;
+                                if (playerTurn == 0) {
+                                    turn = 1;
+                                } else {
+                                    turn = playerTurn + 1;
+                                }
+                                nSalvo.setTurn(turn);
+                                gamePlayer.addSalvoes(nSalvo);
+                                salvoService.saveSalvo(nSalvo);
+                                return new ResponseEntity<>(Util.makeMap("OK", "El salvo de registro correctamente"), HttpStatus.CREATED);
                             } else {
-                                turn = playerTurn + 1;
+                                return new ResponseEntity<>(Util.makeMap("error", "Espera a que sea tu turno"), HttpStatus.FORBIDDEN);
                             }
-                            nSalvo.setTurn(turn);
-                            gamePlayer.addSalvoes(nSalvo);
-                            salvoService.saveSalvo(nSalvo);
-                            return new ResponseEntity<>(Util.makeMap("OK", "El salvo de registro correctamente"), HttpStatus.CREATED);
                         } else {
-                            return new ResponseEntity<>(Util.makeMap("error", "Espera a que sea tu turno"), HttpStatus.FORBIDDEN);
+                            return new ResponseEntity<>(Util.makeMap("error", "Exediste el límite de disparos"), HttpStatus.FORBIDDEN);
                         }
                     } else {
-                        return new ResponseEntity<>(Util.makeMap("error", "Exediste el límite de disparos"), HttpStatus.FORBIDDEN);
+                        return new ResponseEntity<>(Util.makeMap("error", "El jugador no pertenece a este juego"), HttpStatus.UNAUTHORIZED);
                     }
                 } else {
-                    return new ResponseEntity<>(Util.makeMap("error", "El jugador no pertenece a este juego"), HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(Util.makeMap("error", "No existen registros del jugador"), HttpStatus.UNAUTHORIZED);
                 }
-            } else {
-                return new ResponseEntity<>(Util.makeMap("error", "No existen registros del jugador"), HttpStatus.UNAUTHORIZED);
+            }else{
+                return new ResponseEntity<>(Util.makeMap("error", "Espera a tu oponente"), HttpStatus.UNAUTHORIZED);
             }
         } else {
             return new ResponseEntity<>(Util.makeMap("error", "No posee permisos necesarios"), HttpStatus.UNAUTHORIZED);

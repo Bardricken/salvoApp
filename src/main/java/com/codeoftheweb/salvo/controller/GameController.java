@@ -59,7 +59,7 @@ public class GameController {
         Player player = playerService.findPlayerByEmail(authentication.getName());
 
         if (gamePlayer.getPlayer().getId() == player.getId()) {
-            return ResponseEntity.ok(gamePlayer.getGame().makeGameShipDTO(gamePlayer));
+            return ResponseEntity.ok(gamePlayer.getGame().makeGameViewDTO(gamePlayer));
         } else {
             return new ResponseEntity<>(Util.makeMap("error", "No posee permisos"), HttpStatus.UNAUTHORIZED);
         }
