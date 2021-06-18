@@ -62,9 +62,12 @@ public class Game {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         Map<String, Object> hits = new LinkedHashMap<>();
         Optional<GamePlayer> opponent = self.getGame().getGamePlayers().stream().filter(gp -> gp.getPlayer() != self.getPlayer()).findFirst();
-        hits.put("self", self.getSalvoes().stream().map(s -> s.makeHitsDTO(self)).collect(toList()));
+        Map<String, Object> damages = makeDamagesMap();
+        hits.put("self", self.getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).map(s -> s.makeHitsDTO(self, damages)).collect(toList()));
+        resetDamages(damages);
         if (opponent.isPresent()) {
-            hits.put("opponent", opponent.get().getSalvoes().stream().map(s -> s.makeHitsDTO(opponent.get())).collect(toList()));
+            hits.put("opponent", opponent.get().getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).map(s -> s.makeHitsDTO(opponent.get(), damages)).collect(toList()));
+            resetDamages(damages);
         } else {
             hits.put("opponent", new ArrayList<>());
         }
@@ -76,6 +79,20 @@ public class Game {
         dto.put("salvoes", getGamePlayers().stream().map(GamePlayer::makeSalvoDTO).flatMap(Collection::stream).collect(toList()));
         dto.put("hits", hits);
         return dto;
+    }
+
+    private Map<String, Object> makeDamagesMap() {
+        Map<String, Object> dto = new LinkedHashMap<String, Object>();
+        dto.put("carrier", 0);
+        dto.put("battleship", 0);
+        dto.put("submarine", 0);
+        dto.put("destroyer", 0);
+        dto.put("patrolboat", 0);
+        return dto;
+    }
+
+    private void resetDamages(Map<String, Object> damages) {
+        damages.replaceAll((k, v) -> 0);
     }
 
     public List<Player> getPlayers() {

@@ -4,7 +4,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 public class Salvo {
@@ -58,13 +57,13 @@ public class Salvo {
         return dto;
     }
 
-    public Map<String, Object> makeHitsDTO(GamePlayer gamePlayer) {
+    public Map<String, Object> makeHitsDTO(GamePlayer gamePlayer, Map<String, Object> damages) {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         Optional<GamePlayer> opponent = gamePlayer.getGame().getGamePlayers().stream().filter(gp -> gp.getPlayer() != gamePlayer.getPlayer()).findFirst();
         List<String> hitLocations = calculateHitLocations(opponent.get());
         dto.put("turn", this.getTurn());
         dto.put("hitLocations", hitLocations);
-        dto.put("damages", calculateDamages(gamePlayer, opponent.get(), hitLocations));
+        dto.put("damages", calculateDamages(opponent.get(), hitLocations, damages));
         dto.put("missed", calculateMissed(hitLocations));
         return dto;
     }
@@ -86,35 +85,23 @@ public class Salvo {
         return hits;
     }
 
-    private Map<String, Object> calculateDamages(GamePlayer gamePlayer, GamePlayer opponent, List<String> hitLocations) {
+    private Map<String, Object> calculateDamages(GamePlayer opponent, List<String> hitLocations, Map<String, Object> damages) {
         // Hits del turno
         int carrierHits = 0, battleshipHits = 0, submarineHits = 0, destroyerHits = 0, patrolboatHits = 0;
-        // Hits totales
-        int carrier = 0, battleship = 0, submarine = 0, destroyer = 0, patrolboat = 0;
 
-        for (Ship ship : gamePlayer.getShips()) {
-//            System.out.println("SHIP TYPE" + ship.getType());
-//            System.out.println("HIT LOCATIONS" + hitLocations);
-//            System.out.println("SHIP LOCATIONS" + ship.getShipLocations());
-            List<String> hits = ship.getShipLocations();
-            hits.retainAll(hitLocations);
-//            System.out.println("HITS" + hits);
-            switch (ship.getType()) {
-                case "carrier":
-                    carrierHits = hits.size();
-                    break;
-                case "battleship":
-                    battleshipHits = hits.size();
-                    break;
-                case "submarine":
-                    submarineHits = hits.size();
-                    break;
-                case "destroyer":
-                    destroyerHits = hits.size();
-                    break;
-                case "patrolboat":
-                    patrolboatHits = hits.size();
-                    break;
+        for (Ship ship : opponent.getShips()) {
+            for (String location : ship.getShipLocations()) {
+                for (String hit : hitLocations) {
+                    if (location.equals(hit)) {
+                        switch (ship.getType()) {
+                            case "carrier" -> carrierHits++;
+                            case "battleship" -> battleshipHits++;
+                            case "submarine" -> submarineHits++;
+                            case "destroyer" -> destroyerHits++;
+                            case "patrolboat" -> patrolboatHits++;
+                        }
+                    }
+                }
             }
         }
 
@@ -124,12 +111,33 @@ public class Salvo {
         dto.put("submarineHits", submarineHits);
         dto.put("destroyerHits", destroyerHits);
         dto.put("patrolboatHits", patrolboatHits);
-        dto.put("carrier", carrier);
-        dto.put("battleship", battleship);
-        dto.put("submarine", submarine);
-        dto.put("destroyer", destroyer);
-        dto.put("patrolboat", patrolboat);
 
+        for (Map.Entry<String, Object> entry : damages.entrySet()) {
+            switch (entry.getKey()) {
+                case "carrier" -> {
+                    // Actualiza el valor
+                    damages.put(entry.getKey(), Integer.parseInt(entry.getValue().toString()) + carrierHits);
+                    // Genera DTO
+                    dto.put(entry.getKey(), entry.getValue());
+                }
+                case "battleship" -> {
+                    damages.put(entry.getKey(), Integer.parseInt(entry.getValue().toString()) + battleshipHits);
+                    dto.put(entry.getKey(), entry.getValue());
+                }
+                case "submarine" -> {
+                    damages.put(entry.getKey(), Integer.parseInt(entry.getValue().toString()) + submarineHits);
+                    dto.put(entry.getKey(), entry.getValue());
+                }
+                case "destroyer" -> {
+                    damages.put(entry.getKey(), Integer.parseInt(entry.getValue().toString()) + destroyerHits);
+                    dto.put(entry.getKey(), entry.getValue());
+                }
+                case "patrolboat" -> {
+                    damages.put(entry.getKey(), Integer.parseInt(entry.getValue().toString()) + patrolboatHits);
+                    dto.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
         return dto;
     }
 

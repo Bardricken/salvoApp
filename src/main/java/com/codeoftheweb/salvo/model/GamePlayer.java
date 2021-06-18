@@ -26,10 +26,10 @@ public class GamePlayer {
     private Player player;
 
     @OneToMany(mappedBy = "gpShip", fetch = FetchType.EAGER)
-    Set<Ship> ship;
+    Set<Ship> ship = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "gpSalvo", fetch = FetchType.EAGER)
-    Set<Salvo> salvo;
+    Set<Salvo> salvo = new LinkedHashSet<>();
 
     //Constructors
     public GamePlayer() {
@@ -84,8 +84,8 @@ public class GamePlayer {
         return salvo.stream().map(Salvo::makeSalvoDTO).collect(toList());
     }
 
-    public List<Salvo> getSalvoes() {
-        return new ArrayList<>(this.salvo);
+    public LinkedHashSet<Salvo> getSalvoes() {
+        return new LinkedHashSet<>(this.salvo);
     }
 
     //Setters
