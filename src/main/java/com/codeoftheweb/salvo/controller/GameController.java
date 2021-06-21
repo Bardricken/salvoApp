@@ -64,29 +64,5 @@ public class GameController {
         }
     }
 
-    @PostMapping("/game/{nn}/players")
-    public ResponseEntity<Object> joinGame(@PathVariable Long nn, Authentication authentication) {
-        boolean exist;
-        long counter;
 
-        if (!Util.isGuest(authentication)) {
-            Game game = gameService.findGameById(nn);
-            if (game != null) {
-                Player player = playerService.findPlayerByEmail(authentication.getName());
-                counter = game.getPlayers().stream().count();
-                exist = game.getPlayers().contains(player.getId());
-
-                if (counter < 2 && !exist) {
-                    GamePlayer gp = gamePlayerService.saveGamePlayer(new GamePlayer(game, player, new Date()));
-                    return new ResponseEntity<>(Util.makeMap("gpid", gp.getId()), HttpStatus.CREATED);
-                } else {
-                    return new ResponseEntity<>("El juego está lleno", HttpStatus.FORBIDDEN);
-                }
-            } else {
-                return new ResponseEntity<>("No existe tal juego", HttpStatus.FORBIDDEN);
-            }
-        } else {
-            return new ResponseEntity<>(Util.makeMap("error", "No posee permisos"), HttpStatus.UNAUTHORIZED);
-        }
-    }
 }

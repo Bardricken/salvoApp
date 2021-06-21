@@ -1,5 +1,6 @@
 package com.codeoftheweb.salvo.model;
 
+import com.codeoftheweb.salvo.Util;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -16,7 +17,7 @@ public class Salvo {
 
     @ElementCollection
     @Column(name = "locations")
-    private List<String> cells = new ArrayList<>();
+    private List<String> salvoLocations = new ArrayList<>();
 
     //Relations
     @ManyToOne(fetch = FetchType.EAGER)
@@ -26,9 +27,9 @@ public class Salvo {
     public Salvo() {
     }
 
-    public Salvo(GamePlayer gamePlayer, int turn, List<String> cells) {
+    public Salvo(GamePlayer gamePlayer, int turn, List<String> salvoLocations) {
         this.turn = turn;
-        this.cells = cells;
+        this.salvoLocations = salvoLocations;
         this.gpSalvo = gamePlayer;
     }
 
@@ -41,8 +42,8 @@ public class Salvo {
         return turn;
     }
 
-    public List<String> getCells() {
-        return cells;
+    public List<String> getSalvoLocations() {
+        return salvoLocations;
     }
 
     public GamePlayer getGamePlayer() {
@@ -53,31 +54,32 @@ public class Salvo {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         dto.put("turn", this.getTurn());
         dto.put("player", this.getGamePlayer().getPlayer().getId());
-        dto.put("locations", this.getCells());
+        dto.put("locations", this.getSalvoLocations());
         return dto;
     }
 
-    public Map<String, Object> makeHitsDTO(GamePlayer gamePlayer, Map<String, Object> damages) {
+    public Map<String, Object> makeHitsDTO(GamePlayer self, Map<String, Object> damages) {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
-        Optional<GamePlayer> opponent = gamePlayer.getGame().getGamePlayers().stream().filter(gp -> gp.getPlayer() != gamePlayer.getPlayer()).findFirst();
-        List<String> hitLocations = calculateHitLocations(opponent.get());
+        GamePlayer opponent = Util.getOpponent(self);
+        List<String> hitLocations = calculateHitLocations(self);
         dto.put("turn", this.getTurn());
         dto.put("hitLocations", hitLocations);
-        dto.put("damages", calculateDamages(opponent.get(), hitLocations, damages));
-        dto.put("missed", calculateMissed(hitLocations));
+        dto.put("damages", calculateDamages(self, hitLocations, damages));
+        dto.put("missed", calculateMissed(opponent, hitLocations));
         return dto;
     }
 
-    private List<String> calculateHitLocations(GamePlayer gamePlayer) {
+    private List<String> calculateHitLocations(GamePlayer self) {
         List<String> hits = new ArrayList<>();
-        // Celdas de los salvos
-        for (String cell : this.getCells()) {
-            // Barcos del oponente
-            for (Ship ship : gamePlayer.getShips()) {
-                // Ubicaciones del barco
-                for (String location : ship.getShipLocations()) {
-                    if (cell.equals(location)) {
-                        hits.add(location);
+        GamePlayer opponent = Util.getOpponent(self);
+
+        for (Salvo salvo : opponent.getSalvoes()) {
+            if (salvo.getTurn() == this.getTurn()) {
+                for (Ship ship : self.getShip()) {
+                    for (String location : ship.getShipLocations()) {
+                        if (salvo.getSalvoLocations().contains(location)) {
+                            hits.add(location);
+                        }
                     }
                 }
             }
@@ -85,21 +87,21 @@ public class Salvo {
         return hits;
     }
 
-    private Map<String, Object> calculateDamages(GamePlayer opponent, List<String> hitLocations, Map<String, Object> damages) {
+    private Map<String, Object> calculateDamages(GamePlayer self, List<String> hitLocations, Map<String, Object> damages) {
         // Hits del turno
         int carrierHits = 0, battleshipHits = 0, submarineHits = 0, destroyerHits = 0, patrolboatHits = 0;
+        GamePlayer opponent = Util.getOpponent(self);
 
-        for (Ship ship : opponent.getShips()) {
+        // Barcos del self
+        for (Ship ship : self.getShips()) {
             for (String location : ship.getShipLocations()) {
-                for (String hit : hitLocations) {
-                    if (location.equals(hit)) {
-                        switch (ship.getType()) {
-                            case "carrier" -> carrierHits++;
-                            case "battleship" -> battleshipHits++;
-                            case "submarine" -> submarineHits++;
-                            case "destroyer" -> destroyerHits++;
-                            case "patrolboat" -> patrolboatHits++;
-                        }
+                if (hitLocations.contains(location)) {
+                    switch (ship.getType()) {
+                        case "carrier" -> carrierHits++;
+                        case "battleship" -> battleshipHits++;
+                        case "submarine" -> submarineHits++;
+                        case "destroyer" -> destroyerHits++;
+                        case "patrolboat" -> patrolboatHits++;
                     }
                 }
             }
@@ -141,8 +143,14 @@ public class Salvo {
         return dto;
     }
 
-    private int calculateMissed(List<String> hitLocations) {
-        return 5 - hitLocations.size();
+    private int calculateMissed(GamePlayer opponent, List<String> hitLocations) {
+        int missed = 0;
+        for (Salvo salvo : opponent.getSalvoes()) {
+            if (this.getTurn() == salvo.getTurn()) {
+                missed = salvo.getSalvoLocations().size() - hitLocations.size();
+            }
+        }
+        return missed;
     }
 
     //Setters
@@ -150,8 +158,8 @@ public class Salvo {
         this.turn = turn;
     }
 
-    public void setCells(List<String> cells) {
-        this.cells = cells;
+    public void setSalvoLocations(List<String> salvoLocations) {
+        this.salvoLocations = salvoLocations;
     }
 
     public void setGpSalvo(GamePlayer gpSalvo) {

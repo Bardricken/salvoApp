@@ -64,4 +64,22 @@ public class Score {
         dto.put("player", this.getPlayer().getId());
         return dto;
     }
+
+    // Setters
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    public void setFinishDate(Date finishDate) {
+        this.finishDate = finishDate;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
 }

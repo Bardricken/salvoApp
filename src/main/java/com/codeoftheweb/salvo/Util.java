@@ -1,5 +1,6 @@
 package com.codeoftheweb.salvo;
 
+import com.codeoftheweb.salvo.model.GamePlayer;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -17,4 +18,7 @@ public class Util {
         return map;
     }
 
+    public static GamePlayer getOpponent(GamePlayer gamePlayer) {
+        return gamePlayer.getGame().getGamePlayers().stream().filter(gp -> gp.getPlayer() != gamePlayer.getPlayer()).findFirst().orElse(new GamePlayer());
+    }
 }

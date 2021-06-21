@@ -1,6 +1,9 @@
 package com.codeoftheweb.salvo.model;
 
+import com.codeoftheweb.salvo.Util;
+import com.codeoftheweb.salvo.service.implementation.ScoreServiceImplement;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -58,24 +61,20 @@ public class Game {
         return dto;
     }
 
-    public Map<String, Object> makeGameViewDTO(GamePlayer self) {
+    public Map<String, Object> makeGameViewDTO(GamePlayer gamePlayer) {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         Map<String, Object> hits = new LinkedHashMap<>();
-        Optional<GamePlayer> opponent = self.getGame().getGamePlayers().stream().filter(gp -> gp.getPlayer() != self.getPlayer()).findFirst();
         Map<String, Object> damages = makeDamagesMap();
-        hits.put("self", self.getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).map(s -> s.makeHitsDTO(self, damages)).collect(toList()));
+        hits.put("self", gamePlayer.getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn))
+                .map(s -> s.makeHitsDTO(gamePlayer, damages)).collect(toList()));
         resetDamages(damages);
-        if (opponent.isPresent()) {
-            hits.put("opponent", opponent.get().getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).map(s -> s.makeHitsDTO(opponent.get(), damages)).collect(toList()));
-            resetDamages(damages);
-        } else {
-            hits.put("opponent", new ArrayList<>());
-        }
+        hits.put("opponent", Util.getOpponent(gamePlayer).getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn))
+                .map(s -> s.makeHitsDTO(Util.getOpponent(gamePlayer), damages)).collect(toList()));
         dto.put("id", this.getId());
         dto.put("created", this.getCreationDate());
-        dto.put("gameState", "PLACESHIPS");
+        dto.put("gameState", this.getState(gamePlayer));
         dto.put("gamePlayers", getGamePlayers().stream().map(GamePlayer::makeGamePlayerDTO).collect(toList()));
-        dto.put("ships", self.getShips().stream().map(Ship::makeShipDTO).collect(toList()));
+        dto.put("ships", gamePlayer.getShips().stream().map(Ship::makeShipDTO).collect(toList()));
         dto.put("salvoes", getGamePlayers().stream().map(GamePlayer::makeSalvoDTO).flatMap(Collection::stream).collect(toList()));
         dto.put("hits", hits);
         return dto;
@@ -93,6 +92,68 @@ public class Game {
 
     private void resetDamages(Map<String, Object> damages) {
         damages.replaceAll((k, v) -> 0);
+    }
+
+    private String getState(GamePlayer self) {
+
+        GamePlayer opponent = Util.getOpponent(self);
+
+        if (self.getShips().isEmpty()) {
+            return "PLACESHIPS";
+        }
+
+        if (opponent.getShips().isEmpty()) {
+            return "WAITINGFOROPP";
+        }
+
+        if (self.getSalvoes().size() > opponent.getSalvoes().size()) {
+            return "WAIT";
+        }
+
+        int selfTurn = self.getSalvoes().size();
+        int opponentTurn = opponent.getSalvoes().size();
+
+        if (self.getGame().getPlayers().size() == 2 && selfTurn == opponentTurn) {
+            ScoreServiceImplement scoreService = new ScoreServiceImplement();
+            Score score = new Score();
+            int selfDamage = getDamage(self);
+            int opponentDamage = getDamage(opponent);
+            score.setGame(self.getGame());
+            score.setPlayer(self.getPlayer());
+            score.setFinishDate(new Date());
+            if (selfDamage == 17 && opponentDamage == 17) {
+                score.setScore(0.5);
+                scoreService.saveScore(score);
+                return "TIE";
+            } else if (selfDamage == 17) {
+                score.setScore(1);
+                scoreService.saveScore(score);
+                return "WON";
+            } else if (opponentDamage == 17) {
+                score.setScore(0);
+                scoreService.saveScore(score);
+                return "LOST";
+            }
+        }
+        return "PLAY";
+    }
+
+    private int getDamage(GamePlayer gamePlayer) {
+        int totalDamage = 0;
+        GamePlayer opponent = Util.getOpponent(gamePlayer);
+
+        for (Salvo salvo : gamePlayer.getSalvoes()) {
+            for (String location : salvo.getSalvoLocations()) {
+                for (Ship ship : opponent.getShips()) {
+                    if (ship.getShipLocations().contains(location)) {
+                        switch (ship.getType()) {
+                            case "carrier", "battleship", "submarine", "destroyer", "patrolboat" -> totalDamage++;
+                        }
+                    }
+                }
+            }
+        }
+        return totalDamage;
     }
 
     public List<Player> getPlayers() {
