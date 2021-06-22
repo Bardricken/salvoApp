@@ -4,6 +4,9 @@ import com.codeoftheweb.salvo.Util;
 import com.codeoftheweb.salvo.model.Game;
 import com.codeoftheweb.salvo.model.GamePlayer;
 import com.codeoftheweb.salvo.model.Player;
+import com.codeoftheweb.salvo.service.GamePlayerService;
+import com.codeoftheweb.salvo.service.GameService;
+import com.codeoftheweb.salvo.service.PlayerService;
 import com.codeoftheweb.salvo.service.implementation.GamePlayerServiceImplement;
 import com.codeoftheweb.salvo.service.implementation.GameServiceImplement;
 import com.codeoftheweb.salvo.service.implementation.PlayerServiceImplement;
@@ -20,11 +23,11 @@ import java.util.Date;
 @RequestMapping("/api")
 public class PlayerController {
     @Autowired
-    private GamePlayerServiceImplement gamePlayerService;
+    private GamePlayerService gamePlayerService;
     @Autowired
-    private PlayerServiceImplement playerService;
+    private PlayerService playerService;
     @Autowired
-    private GameServiceImplement gameService;
+    private GameService gameService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 

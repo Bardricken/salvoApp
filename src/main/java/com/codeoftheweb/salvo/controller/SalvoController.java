@@ -4,6 +4,9 @@ import com.codeoftheweb.salvo.Util;
 import com.codeoftheweb.salvo.model.GamePlayer;
 import com.codeoftheweb.salvo.model.Player;
 import com.codeoftheweb.salvo.model.Salvo;
+import com.codeoftheweb.salvo.service.GamePlayerService;
+import com.codeoftheweb.salvo.service.PlayerService;
+import com.codeoftheweb.salvo.service.SalvoService;
 import com.codeoftheweb.salvo.service.implementation.GamePlayerServiceImplement;
 import com.codeoftheweb.salvo.service.implementation.PlayerServiceImplement;
 import com.codeoftheweb.salvo.service.implementation.SalvoServiceImplement;
@@ -17,11 +20,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class SalvoController {
     @Autowired
-    private PlayerServiceImplement playerService;
+    private PlayerService playerService;
     @Autowired
-    private GamePlayerServiceImplement gamePlayerService;
+    private GamePlayerService gamePlayerService;
     @Autowired
-    private SalvoServiceImplement salvoService;
+    private SalvoService salvoService;
 
     @PostMapping("/games/players/{nn}/salvoes")
     public ResponseEntity<Object> addSalvoes(@PathVariable long nn, @RequestBody Salvo nSalvo, Authentication authentication) {

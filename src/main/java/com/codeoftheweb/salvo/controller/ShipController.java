@@ -4,6 +4,9 @@ import com.codeoftheweb.salvo.Util;
 import com.codeoftheweb.salvo.model.GamePlayer;
 import com.codeoftheweb.salvo.model.Player;
 import com.codeoftheweb.salvo.model.Ship;
+import com.codeoftheweb.salvo.service.GamePlayerService;
+import com.codeoftheweb.salvo.service.PlayerService;
+import com.codeoftheweb.salvo.service.ShipService;
 import com.codeoftheweb.salvo.service.implementation.GamePlayerServiceImplement;
 import com.codeoftheweb.salvo.service.implementation.PlayerServiceImplement;
 import com.codeoftheweb.salvo.service.implementation.ShipServiceImplement;
@@ -19,11 +22,11 @@ import java.util.Set;
 @RequestMapping("/api")
 public class ShipController {
     @Autowired
-    private GamePlayerServiceImplement gamePlayerService;
+    private GamePlayerService gamePlayerService;
     @Autowired
-    private PlayerServiceImplement playerService;
+    private PlayerService playerService;
     @Autowired
-    private ShipServiceImplement shipService;
+    private ShipService shipService;
 
     @PostMapping("/games/players/{nn}/ships")
     public ResponseEntity<Object> addShip(@PathVariable long nn, @RequestBody Set<Ship> ships, Authentication authentication) {
