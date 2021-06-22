@@ -46,21 +46,21 @@ public class SalvoController {
                             nSalvo.setTurn(turn);
                             self.addSalvoes(nSalvo);
                             salvoService.saveSalvo(nSalvo);
-                            return new ResponseEntity<>(Util.makeMap("OK", "El salvo de registro correctamente"), HttpStatus.CREATED);
+                            return new ResponseEntity<>(Util.makeMap("OK", "Successfully registered"), HttpStatus.CREATED);
                         } else {
-                            return new ResponseEntity<>(Util.makeMap("error", "Espera a que sea tu turno"), HttpStatus.FORBIDDEN);
+                            return new ResponseEntity<>(Util.makeMap("error", "Wait your turn"), HttpStatus.FORBIDDEN);
                         }
                     } else {
-                        return new ResponseEntity<>(Util.makeMap("error", "Debes lanzar entre 1 y 5 disparos"), HttpStatus.FORBIDDEN);
+                        return new ResponseEntity<>(Util.makeMap("error", "You must fire between 1 and 5 shots"), HttpStatus.FORBIDDEN);
                     }
                 } else {
-                    return new ResponseEntity<>(Util.makeMap("error", "Espera a tu oponente"), HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(Util.makeMap("error", "Wait for your opponent"), HttpStatus.UNAUTHORIZED);
                 }
             } else {
-                return new ResponseEntity<>(Util.makeMap("error", "El jugador no pertenece a este juego"), HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(Util.makeMap("error", "The player doesn't belong to this game"), HttpStatus.UNAUTHORIZED);
             }
         } else {
-            return new ResponseEntity<>(Util.makeMap("error", "No posee permisos necesarios"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Util.makeMap("error", "You don't have permissions"), HttpStatus.UNAUTHORIZED);
         }
     }
 }

@@ -37,18 +37,18 @@ public class ShipController {
                             gamePlayer.addShips(s);
                             shipService.saveShip(s);
                         }
-                        return new ResponseEntity<>(Util.makeMap("OK", "Sus barcos han sido colocados exitosamente"), HttpStatus.CREATED);
+                        return new ResponseEntity<>(Util.makeMap("OK", "Successfully registered"), HttpStatus.CREATED);
                     } else {
-                        return new ResponseEntity<>(Util.makeMap("error", "Sus barcos ya se encuentran colocados"), HttpStatus.FORBIDDEN);
+                        return new ResponseEntity<>(Util.makeMap("error", "Your ships are already in place"), HttpStatus.FORBIDDEN);
                     }
                 } else {
-                    return new ResponseEntity<>(Util.makeMap("error", "El jugador no pertenece a este juego"), HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(Util.makeMap("error", "The player doesn't belong to this game"), HttpStatus.UNAUTHORIZED);
                 }
             } else {
-                return new ResponseEntity<>(Util.makeMap("error", "No existen registros del jugador"), HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(Util.makeMap("error", "There are no player records"), HttpStatus.UNAUTHORIZED);
             }
         } else {
-            return new ResponseEntity<>(Util.makeMap("error", "No posee permisos necesarios"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Util.makeMap("error", "You don't have permissions"), HttpStatus.UNAUTHORIZED);
         }
     }
 }

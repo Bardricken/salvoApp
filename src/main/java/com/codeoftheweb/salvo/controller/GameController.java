@@ -49,7 +49,7 @@ public class GameController {
             GamePlayer gp = gamePlayerService.saveGamePlayer(new GamePlayer(game, player, new Date()));
             return new ResponseEntity<>(Util.makeMap("gpid", gp.getId()), HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(Util.makeMap("error", "No posee permisos"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Util.makeMap("error", "You don't have permissions"), HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -61,7 +61,7 @@ public class GameController {
         if (self.getPlayer().getId() == player.getId()) {
             return ResponseEntity.ok(makeGameViewDTO(self));
         } else {
-            return new ResponseEntity<>(Util.makeMap("error", "No posee permisos"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Util.makeMap("error", "You don't have permissions"), HttpStatus.UNAUTHORIZED);
         }
     }
 

@@ -33,9 +33,9 @@ public class PlayerController {
         if (playerService.findPlayerByEmail(email) == null) {
             Player player = new Player(email, passwordEncoder.encode(password));
             playerService.savePlayer(player);
-            return new ResponseEntity<>(Util.makeMap("OK", "Ha sido registrado exitosamente"), HttpStatus.CREATED);
+            return new ResponseEntity<>(Util.makeMap("OK", "Successfully registered"), HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(Util.makeMap("error", "Email en uso"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(Util.makeMap("error", "Email in use"), HttpStatus.FORBIDDEN);
         }
     }
 
@@ -55,13 +55,13 @@ public class PlayerController {
                     GamePlayer gp = gamePlayerService.saveGamePlayer(new GamePlayer(game, player, new Date()));
                     return new ResponseEntity<>(Util.makeMap("gpid", gp.getId()), HttpStatus.CREATED);
                 } else {
-                    return new ResponseEntity<>("El juego está lleno", HttpStatus.FORBIDDEN);
+                    return new ResponseEntity<>("The game is already full", HttpStatus.FORBIDDEN);
                 }
             } else {
-                return new ResponseEntity<>("No existe tal juego", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("The game doesn't exist", HttpStatus.FORBIDDEN);
             }
         } else {
-            return new ResponseEntity<>(Util.makeMap("error", "No posee permisos"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Util.makeMap("error", "You don't have permissions"), HttpStatus.UNAUTHORIZED);
         }
     }
 }
